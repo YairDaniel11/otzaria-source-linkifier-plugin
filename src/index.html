@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>מקשר מקורות</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --c-primary: #2563eb;
+      --c-primary-subtle: rgba(37,99,235,0.10);
+      --c-surface: #ffffff;
+      --c-surface-2: #f3f4f6;
+      --c-on-surface: #111827;
+      --c-on-surface-dim: #6b7280;
+      --c-outline: #e5e7eb;
+      --c-error: #dc2626;
+      --c-link: #1d4ed8;
+      --c-link-bg: #eff6ff;
+      --c-link-hover: #1e40af;
+      --radius: 10px;
+      --font: system-ui, -apple-system, sans-serif;
+    }
+    body.dark {
+      --c-surface: #18181b;
+      --c-surface-2: #27272a;
+      --c-on-surface: #f4f4f5;
+      --c-on-surface-dim: #a1a1aa;
+      --c-outline: #3f3f46;
+      --c-link: #93c5fd;
+      --c-link-bg: rgba(147,197,253,0.10);
+      --c-link-hover: #bfdbfe;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--c-surface);
+      color: var(--c-on-surface);
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ===== כותרת ===== */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px 11px;
+      border-bottom: 1px solid var(--c-outline);
+      flex-shrink: 0;
+    }
+    header h1 { font-size: 15px; font-weight: 600; flex: 1; }
+    .badge {
+      font-size: 11px;
+      background: var(--c-primary-subtle);
+      color: var(--c-primary);
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-weight: 500;
+      display: none;
+    }
+    .badge.show { display: inline; }
+
+    /* ===== פס מחבר ===== */
+    .author-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 16px;
+      border-bottom: 1px solid var(--c-outline);
+      background: var(--c-surface-2);
+      flex-shrink: 0;
+    }
+    .author-icon {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--c-outline);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      color: var(--c-on-surface-dim);
+    }
+    .author-icon svg { display: block; }
+    .author-info { display: flex; flex-direction: column; gap: 1px; }
+    .author-name { font-size: 12px; font-weight: 500; color: var(--c-on-surface); }
+    .author-version { font-size: 11px; color: var(--c-on-surface-dim); }
+
+    /* ===== גוף ===== */
+    main { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ===== אזור קלט ===== */
+    .input-area {
+      display: flex; flex-direction: column;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--c-outline);
+      gap: 9px;
+      flex-shrink: 0;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      resize: vertical;
+      border: 1.5px solid var(--c-outline);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.7;
+      background: var(--c-surface-2);
+      color: var(--c-on-surface);
+      outline: none;
+      transition: border-color .15s;
+      direction: rtl;
+    }
+    textarea:focus { border-color: var(--c-primary); }
+    textarea::placeholder { color: var(--c-on-surface-dim); }
+
+    /* ===== בחירת סוג סוגריים ===== */
+    .bracket-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .bracket-label {
+      font-size: 12px;
+      color: var(--c-on-surface-dim);
+      margin-left: 4px; /* RTL: visual left = start */
+      flex-shrink: 0;
+    }
+    .bracket-toggle {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1.5px solid var(--c-outline);
+      background: var(--c-surface);
+      cursor: pointer;
+      font-family: var(--font);
+      font-size: 12.5px;
+      color: var(--c-on-surface);
+      transition: border-color .12s, background .12s, color .12s;
+      user-select: none;
+    }
+    .bracket-toggle input[type="checkbox"] { display: none; }
+    .bracket-toggle.active {
+      border-color: var(--c-primary);
+      background: var(--c-primary-subtle);
+      color: var(--c-primary);
+      font-weight: 600;
+    }
+    .bracket-toggle .sym {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    /* ===== כפתורים ===== */
+    .toolbar { display: flex; gap: 8px; align-items: center; }
+    button {
+      cursor: pointer; border: none; border-radius: 8px;
+      font-family: var(--font); font-size: 13px; font-weight: 500;
+      padding: 7px 14px;
+      transition: background .15s, opacity .15s;
+    }
+    .btn-primary { background: var(--c-primary); color: #fff; }
+    .btn-primary:hover { opacity: .88; }
+    .btn-secondary {
+      background: var(--c-surface-2); color: var(--c-on-surface);
+      border: 1px solid var(--c-outline);
+    }
+    .btn-secondary:hover { opacity: .75; }
+    .btn-secondary:disabled { opacity: .4; cursor: default; }
+
+    /* ===== אזור פלט ===== */
+    .output-area { flex: 1; overflow-y: auto; padding: 16px; }
+
+    .placeholder {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      height: 100%; gap: 10px;
+      color: var(--c-on-surface-dim); text-align: center;
+    }
+    .placeholder svg { opacity: .35; }
+    .placeholder p { font-size: 13px; max-width: 220px; line-height: 1.6; }
+
+    .result-box {
+      background: var(--c-surface-2);
+      border: 1px solid var(--c-outline);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      font-size: 14px; line-height: 2;
+      direction: rtl; white-space: pre-wrap; word-break: break-word;
+    }
+
+    a.src {
+      color: var(--c-link); background: var(--c-link-bg);
+      border-radius: 4px; padding: 1px 3px;
+      text-decoration: none; cursor: pointer; font-weight: 500;
+      transition: background .12s, color .12s;
+    }
+    a.src:hover { color: var(--c-link-hover); text-decoration: underline; }
+
+    /* ===== טולטיפ תצוגה מקדימה ===== */
+    #src-tooltip {
+      position: fixed;
+      z-index: 9999;
+      max-width: 340px;
+      min-width: 180px;
+      background: var(--c-surface);
+      border: 1px solid var(--c-outline);
+      border-radius: 10px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.14), 0 1px 4px rgba(0,0,0,.07);
+      overflow: hidden;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity .15s, transform .15s;
+      direction: rtl;
+    }
+    #src-tooltip.visible { opacity: 1; transform: translateY(0); }
+    .tt-header {
+      display: flex; align-items: center; gap: 7px;
+      padding: 8px 12px 7px;
+      border-bottom: 1px solid var(--c-outline);
+      background: var(--c-surface-2);
+    }
+    .tt-header svg { flex-shrink: 0; opacity: .55; }
+    .tt-title {
+      font-size: 12px; font-weight: 600; color: var(--c-on-surface);
+      flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .tt-body {
+      padding: 10px 12px;
+      font-size: 13px; line-height: 1.8;
+      color: var(--c-on-surface);
+      max-height: 155px; overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 6;
+      -webkit-box-orient: vertical;
+    }
+    .tt-body.loading, .tt-body.error { color: var(--c-on-surface-dim); font-style: italic; }
+
+    .stats { font-size: 12px; color: var(--c-on-surface-dim); margin-bottom: 10px; }
+
+    #toast {
+      position: fixed; bottom: 18px; left: 50%;
+      transform: translateX(-50%) translateY(12px);
+      background: var(--c-on-surface); color: var(--c-surface);
+      padding: 8px 18px; border-radius: 20px; font-size: 13px;
+      opacity: 0; pointer-events: none;
+      transition: opacity .2s, transform .2s; z-index: 999; white-space: nowrap;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>מקשר מקורות</h1>
+  <span class="badge" id="badge"></span>
+</header>
+
+<!-- פס מחבר -->
+<div class="author-bar">
+  <div class="author-icon">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <circle cx="12" cy="8" r="4"/>
+      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+    </svg>
+  </div>
+  <div class="author-info">
+    <span class="author-name">מחבר: u88-1</span>
+    <span class="author-version" id="versionLine">גרסה 1.0.0</span>
+  </div>
+</div>
+
+<main>
+  <div class="input-area">
+    <textarea
+      id="inputText"
+      placeholder="הדבק כאן טקסט עם ציטוטי מקורות, למשל: וכדאיתא (שבת ל״ב.) ו(ברכות מ״ד:)"
+      spellcheck="false"
+    ></textarea>
+
+    <!-- בחירת סוג סוגריים -->
+    <div class="bracket-row">
+      <span class="bracket-label">סוגריים:</span>
+
+      <label class="bracket-toggle active" id="tog-round">
+        <input type="checkbox" id="chk-round" checked />
+        <span class="sym">()</span>
+        <span>עגולות</span>
+      </label>
+
+      <label class="bracket-toggle" id="tog-square">
+        <input type="checkbox" id="chk-square" />
+        <span class="sym">[]</span>
+        <span>מרובעות</span>
+      </label>
+
+      <label class="bracket-toggle" id="tog-curly">
+        <input type="checkbox" id="chk-curly" />
+        <span class="sym">{}</span>
+        <span>מסולסלות</span>
+      </label>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn-primary" id="linkifyBtn">קשר מקורות</button>
+      <button class="btn-secondary" id="clearBtn" disabled>נקה</button>
+    </div>
+  </div>
+
+  <div class="output-area">
+    <div class="placeholder" id="placeholder">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+      </svg>
+      <p>הדבק טקסט למעלה ולחץ <strong>קשר מקורות</strong></p>
+    </div>
+    <div id="resultContainer" style="display:none">
+      <div class="stats" id="stats"></div>
+      <div class="result-box" id="result"></div>
+    </div>
+  </div>
+</main>
+
+<div id="toast"></div>
+
+<!-- טולטיפ תצוגה מקדימה -->
+<div id="src-tooltip" role="tooltip">
+  <div class="tt-header">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+    </svg>
+    <span class="tt-title" id="tt-title"></span>
+  </div>
+  <div class="tt-body loading" id="tt-body">טוען...</div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

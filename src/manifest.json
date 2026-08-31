@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "com.otzaria.source-linkifier",
+  "name": "מקשר מקורות",
+  "version": "1.0.1",
+  "description": "הדבק טקסט עם ציטוטי מקורות בסוגריים — התוסף מזהה אותם אוטומטית ומקשר אותם ישירות לאוצריא.",
+  "author": "u88-1",
+  "minAppVersion": "0.9.93",
+  "sdkVersion": "1.x",
+  "stability": "stable",
+  "entrypoint": "index.html",
+  "permissions": [
+    "app.info.read",
+    "library.books.read",
+    "library.content.read",
+    "reader.open",
+    "ui.feedback",
+    "events.subscribe:theme.changed"
+  ],
+  "contributes": {
+    "toolTab": {
+      "title": "מקשר מקורות",
+      "order": 300,
+      "defaultPinned": true,
+      "iconName": "link_24_regular"
+    }
+  }
+}
