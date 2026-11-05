@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "com.otzaria.source-linkifier",
   "name": "מקשר מקורות",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "הדבק טקסט עם ציטוטי מקורות בסוגריים — התוסף מזהה אותם אוטומטית ומקשר אותם ישירות לאוצריא.",
   "author": "u88-1",
   "minAppVersion": "0.9.93",
